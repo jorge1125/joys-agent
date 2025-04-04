@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # Servicio de base de datos
+  db:
+    image: timescale/timescaledb:latest-pg14
+    environment:
+      - POSTGRES_USER=joysfarm
+      - POSTGRES_PASSWORD=joysfarm_password
+      - POSTGRES_DB=joysfarm_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - joysfarm_network
+
+  # Servicio de backend
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://joysfarm:joysfarm_password@db:5432/joysfarm_db
+      - SECRET_KEY=your_secret_key_here
+      - ENVIRONMENT=production
+    restart: unless-stopped
+    networks:
+      - joysfarm_network
+
+  # Servicio de frontend
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    networks:
+      - joysfarm_network
+
+# Volúmenes para persistencia de datos
+volumes:
+  postgres_data:
+
+# Redes para comunicación entre servicios
+networks:
+  joysfarm_network:
+    driver: bridge
