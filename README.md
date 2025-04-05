@@ -61,7 +61,7 @@ sudo usermod -aG docker $USER
 sudo reboot
 
 # Clonar el repositorio
-git clone https://github.com/joysfarm/joys-agent.git
+git clone https://github.com/jorge1125/joys-agent.git
 cd joys-agent
 
 # Configurar variables de entorno
